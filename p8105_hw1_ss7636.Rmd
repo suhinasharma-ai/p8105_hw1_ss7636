@@ -1,0 +1,77 @@
+---
+title: "P8105 Homework 1"
+author: "ss7636"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 1
+
+```{r}
+library(moderndive)
+data("early_january_weather")
+early_january_weather
+```
+```{r}
+n_row = nrow(early_january_weather)
+n_col = ncol(early_january_weather)
+mean_temp = mean(early_january_weather$temp)
+```
+
+The dataset has `r n_row` rows and `r n_col` columns.
+The important variables are:
+`temp`: temperature in Celsius
+`month`: 1 (January)
+`year`: 2013
+`humid`: humidity
+The mean temperature is `r mean_temp` degrees Celsius. 
+
+```{r}
+library(ggplot2)
+plot = ggplot(early_january_weather, aes(x= time_hour, y = temp, color= humid)) +
+  geom_point()+
+  labs(title = "Temperature vs Hour Colored by Humidity", 
+       x = "Hour",
+       y = "Temperature")
+
+plot
+```
+```{r}
+ggsave("weather_plot.png", plot = plot)
+```
+
+
+## Problem 2
+
+
+```{r}
+
+library(tidyverse)
+df = 
+  tibble(
+num = rnorm(10),            
+logical = num > 0,          
+char=  letters[1:10],            
+factor = factor(sample(c("Small", "Medium", "Large"), 10, replace = TRUE))
+)
+
+mean(df %>% pull(num))       
+mean(df %>% pull(logical))    
+mean(df %>% pull(char))          
+mean(df %>% pull(factor))  
+
+```
+
+Cannot take the mean of a character or factor. We were able to take the mean of numeric and logical variables.
+
+```{r}
+as.numeric(df %>% pull(logical)) 
+as.numeric(df %>% pull(char)) 
+as.numeric(df %>% pull(factor)) 
+```
+For logical vectors, TRUE values are converted to 1 and FALSE values are converted to 0. This makes sense because R internally stores logicals as binary values. Taking the mean of a logical vector works because it gives the proportion of TRUEs. This does not work for character vectors and we get NA values with a warning because arbitrary characters cannot be meaningfully mapped to numbers. As a result, the mean cannot be calculated.Lastly, for the factor, we see the values that the factor interanally stores the levels as. For example, the first level is coded as 1, the second as 2, and so on. as.numeric() reveals those codes. While we can technically compute a mean of these numbers, it is not meaningful because the numeric codes don’t represent real quantitative values. This helps explain why the mean function only gives us a meaningful output for the numerical and logical values, and why it does not give us anything for the character and factor values. 
+
+
